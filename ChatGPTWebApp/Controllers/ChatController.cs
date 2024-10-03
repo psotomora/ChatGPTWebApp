@@ -1,13 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using OpenAI;
+using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Collections.Generic;
-using OpenAI.Chat;
-using OpenAI.Models;
-using System.Reflection;
-
+using OpenAI.GPT3; // SDK de OpenAI proporcionado por Betalgo
+using OpenAI.GPT3.Interfaces;
+using OpenAI.GPT3.Managers;
+using OpenAI.GPT3.ObjectModels.RequestModels;
+using OpenAI.GPT3.ObjectModels;
 
 namespace ChatGPTWebApp.Controllers
 {
@@ -45,19 +46,11 @@ namespace ChatGPTWebApp.Controllers
                 _chatMessages.Clear(); // Limpiar cualquier mensaje previo
 
                 // Crear el mensaje del sistema
-                var systemMessage = new ChatMessage
-                {
-                    Role = "system",
-                    Content = "Utiliza el siguiente documento como contexto para responder las preguntas del usuario."
-                };
+                var systemMessage = new ChatMessage("system", "Utiliza el siguiente documento como contexto para responder las preguntas del usuario.");
                 _chatMessages.Add(systemMessage);
 
                 // Agregar el documento como mensaje del usuario
-                var userDocumentMessage = new ChatMessage
-                {
-                    Role = "user",
-                    Content = documentText
-                };
+                var userDocumentMessage = new ChatMessage("user", documentText);
                 _chatMessages.Add(userDocumentMessage);
 
                 ViewBag.Message = "Documento cargado exitosamente. Ahora puedes hacer preguntas.";
@@ -71,11 +64,7 @@ namespace ChatGPTWebApp.Controllers
                 else
                 {
                     // Agregar la pregunta del usuario al historial de mensajes
-                    var userQuestionMessage = new ChatMessage
-                    {
-                        Role = "user",
-                        Content = userQuestion
-                    };
+                    var userQuestionMessage = new ChatMessage("user", userQuestion);
                     _chatMessages.Add(userQuestionMessage);
 
                     // Crear la solicitud de chat
@@ -94,11 +83,7 @@ namespace ChatGPTWebApp.Controllers
                         var reply = response.Choices[0].Message.Content;
 
                         // Agregar la respuesta del asistente al historial de mensajes
-                        var assistantMessage = new ChatMessage
-                        {
-                            Role = "assistant",
-                            Content = reply
-                        };
+                        var assistantMessage = new ChatMessage("assistant", reply);
                         _chatMessages.Add(assistantMessage);
 
                         ViewBag.Response = reply;
