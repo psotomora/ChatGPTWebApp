@@ -1,0 +1,37 @@
+﻿@using Microsoft.AspNetCore.Http
+@model IFormFile
+
+@{
+    ViewData["Title"] = "Chat con ChatGPT";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+@if (ViewBag.Message != null)
+{
+    <p style="color:green;">@ViewBag.Message</p>
+}
+
+@if (ViewBag.Response != null)
+{
+    <h3>Respuesta de ChatGPT:</h3>
+    <p>@ViewBag.Response</p>
+}
+
+<form asp-action="Index" method="post" enctype="multipart/form-data">
+    <div>
+        <label for="uploadedFile">Subir documento (.txt):</label><br />
+        <input type="file" name="uploadedFile" /><br /><br />
+        <button type="submit">Cargar Documento</button>
+    </div>
+</form>
+
+<hr />
+
+<form asp-action="Index" method="post">
+    <div>
+        <label for="userQuestion">Escribe tu pregunta:</label><br />
+        <textarea name="userQuestion" rows="4" cols="50"></textarea><br /><br />
+        <button type="submit">Enviar Pregunta</button>
+    </div>
+</form>
